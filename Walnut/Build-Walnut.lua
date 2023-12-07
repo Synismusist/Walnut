@@ -33,7 +33,7 @@ project "Walnut"
    {
        "ImGui",
        "GLFW",
-       "ImPlot"
+       "ImPlot",
 
        "%{Library.Vulkan}",
    }
