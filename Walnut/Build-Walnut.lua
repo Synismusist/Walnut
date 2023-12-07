@@ -20,6 +20,7 @@ project "Walnut"
       "Platform/GUI",
 
       "../vendor/imgui",
+      "../vendor/implot",
       "../vendor/glfw/include",
       "../vendor/stb_image",
 
@@ -32,6 +33,7 @@ project "Walnut"
    {
        "ImGui",
        "GLFW",
+       "ImPlot"
 
        "%{Library.Vulkan}",
    }
