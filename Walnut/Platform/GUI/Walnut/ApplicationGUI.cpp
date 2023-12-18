@@ -1087,7 +1087,6 @@ namespace Walnut {
 		vkDestroyFence(g_Device, fence, nullptr);
 	}
 
-
 	void Application::SubmitResourceFree(std::function<void()>&& func)
 	{
 		s_ResourceFreeQueue[s_CurrentFrameIndex].emplace_back(func);
