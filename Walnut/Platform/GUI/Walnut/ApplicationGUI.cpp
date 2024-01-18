@@ -52,7 +52,10 @@ static VkInstance               g_Instance = VK_NULL_HANDLE;
 static VkPhysicalDevice         g_PhysicalDevice = VK_NULL_HANDLE;
 static VkDevice                 g_Device = VK_NULL_HANDLE;
 static uint32_t                 g_QueueFamily = (uint32_t)-1;
+static uint32_t                 g_ComputeQueueFamily = (uint32_t)-1;
+static uint32_t                 g_ComputeQueueCount = (uint32_t)-1;
 static VkQueue                  g_Queue = VK_NULL_HANDLE;
+static std::vector<VkQueue> g_ComputeQueue = {};
 static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
@@ -176,25 +179,40 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		VkQueueFamilyProperties* queues = (VkQueueFamilyProperties*)malloc(sizeof(VkQueueFamilyProperties) * count);
 		vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, queues);
 		for (uint32_t i = 0; i < count; i++)
+			if (queues[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				if(g_ComputeQueueCount == (uint32_t)-1)
+					g_ComputeQueueFamily = i;
+				else if (queues[g_ComputeQueueFamily].queueCount < queues[i].queueCount)
+					g_ComputeQueueFamily = i;
+			}
+		for (uint32_t i = 0; i < count; i++)
 			if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
 				g_QueueFamily = i;
-				break;
+				if(g_QueueFamily != g_ComputeQueueFamily)
+					break;
 			}
+		g_ComputeQueueCount = queues[g_ComputeQueueFamily].queueCount;
 		free(queues);
 		IM_ASSERT(g_QueueFamily != (uint32_t)-1);
+		IM_ASSERT(g_ComputeQueueFamily != (uint32_t)-1);
 	}
 
-	// Create Logical Device (with 1 queue)
+	// Create Logical Device (with 1 graphics queue and n compute queues)
 	{
 		int device_extension_count = 1;
 		const char* device_extensions[] = { "VK_KHR_swapchain" };
 		const float queue_priority[] = { 1.0f };
-		VkDeviceQueueCreateInfo queue_info[1] = {};
+		VkDeviceQueueCreateInfo queue_info[2] = {};
 		queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info[0].queueFamilyIndex = g_QueueFamily;
 		queue_info[0].queueCount = 1;
 		queue_info[0].pQueuePriorities = queue_priority;
+		queue_info[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queue_info[1].queueFamilyIndex = g_ComputeQueueFamily;
+		queue_info[1].queueCount = g_ComputeQueueCount;
+		queue_info[1].pQueuePriorities = queue_priority;
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
@@ -204,6 +222,10 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
 		vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
+		g_ComputeQueue.resize(g_ComputeQueueCount);
+		for (uint32_t i = 0; i < g_ComputeQueueCount; i++) {
+			vkGetDeviceQueue(g_Device, g_ComputeQueueFamily, i, &g_ComputeQueue[i]);
+		}
 	}
 
 	// Create Descriptor Pool
@@ -1032,6 +1054,16 @@ namespace Walnut {
 	VkDevice Application::GetDevice()
 	{
 		return g_Device;
+	}
+
+	std::vector<VkQueue> Application::GetComputeQueue()
+	{
+		return g_ComputeQueue;
+	}
+
+	uint32_t Application::GetComputeQueueFamily() 
+	{
+		return g_ComputeQueueFamily;
 	}
 
 	VkCommandBuffer Application::GetCommandBuffer(bool begin)
