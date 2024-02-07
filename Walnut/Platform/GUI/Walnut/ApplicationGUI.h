@@ -73,6 +73,7 @@ namespace Walnut {
 		static VkDevice GetDevice();
 		static std::vector<VkQueue> GetComputeQueue();
 		static uint32_t GetComputeQueueFamily();
+		static uint32_t GetGraphicsQueueFamily();
 
 		static VkCommandBuffer GetCommandBuffer(bool begin);
 		static void FlushCommandBuffer(VkCommandBuffer commandBuffer);

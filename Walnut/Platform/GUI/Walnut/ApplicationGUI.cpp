@@ -42,7 +42,7 @@ extern bool g_ApplicationRunning;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-//#define IMGUI_UNLIMITED_FRAME_RATE
+#define IMGUI_UNLIMITED_FRAME_RATE
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
@@ -55,7 +55,7 @@ static uint32_t                 g_QueueFamily = (uint32_t)-1;
 static uint32_t                 g_ComputeQueueFamily = (uint32_t)-1;
 static uint32_t                 g_ComputeQueueCount = (uint32_t)-1;
 static VkQueue                  g_Queue = VK_NULL_HANDLE;
-static std::vector<VkQueue>		g_ComputeQueue = {};
+static std::vector<VkQueue>		g_ComputeQueue;
 static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
@@ -203,7 +203,8 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 	{
 		int device_extension_count = 1;
 		const char* device_extensions[] = { "VK_KHR_swapchain" };
-		const float queue_priority[] = { 1.0f };
+		const float queue_priority[] = { 0.01f };
+		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);
 		VkDeviceQueueCreateInfo queue_info[2] = {};
 		queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info[0].queueFamilyIndex = g_QueueFamily;
@@ -212,7 +213,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		queue_info[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info[1].queueFamilyIndex = g_ComputeQueueFamily;
 		queue_info[1].queueCount = g_ComputeQueueCount;
-		queue_info[1].pQueuePriorities = queue_priority;
+		queue_info[1].pQueuePriorities = computequeue_priority.data();
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
@@ -1064,6 +1065,11 @@ namespace Walnut {
 	uint32_t Application::GetComputeQueueFamily() 
 	{
 		return g_ComputeQueueFamily;
+	}
+	
+	uint32_t Application::GetGraphicsQueueFamily()
+	{
+		return g_QueueFamily;
 	}
 
 	VkCommandBuffer Application::GetCommandBuffer(bool begin)
