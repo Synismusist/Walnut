@@ -7,6 +7,9 @@ namespace Walnut::UI {
 		auto& style = ImGui::GetStyle();
 		auto& colors = ImGui::GetStyle().Colors;
 
+		// dark blue hsv: 0.661, 0.667, 0.188
+		// aug teal blue cyan hsv: 0.5, 0.871, 0.608
+
 		//========================================================
 		/// Colours
 
@@ -16,9 +19,9 @@ namespace Walnut::UI {
 		colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::groupHeader);
 
 		// Buttons
-		colors[ImGuiCol_Button] = ImColor(56, 56, 56, 200);
-		colors[ImGuiCol_ButtonHovered] = ImColor(70, 70, 70, 255);
-		colors[ImGuiCol_ButtonActive] = ImColor(56, 56, 56, 150);
+		colors[ImGuiCol_Button] = ImColor::HSV(0.5f, 0.871f, 0.408f);
+		colors[ImGuiCol_ButtonHovered] = ImColor::HSV(0.5f, 0.871f, 0.508f);
+		colors[ImGuiCol_ButtonActive] = ImColor::HSV(0.5f, 0.871f, 0.608f);
 
 		// Frame BG
 		colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::propertyField);
@@ -27,8 +30,8 @@ namespace Walnut::UI {
 
 		// Tabs
 		colors[ImGuiCol_Tab] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
-		colors[ImGuiCol_TabHovered] = ImColor(255, 225, 135, 30);
-		colors[ImGuiCol_TabActive] = ImColor(255, 225, 135, 60);
+		colors[ImGuiCol_TabHovered] = ImColor::HSV(0.5f, 0.871f, 0.108f);
+		colors[ImGuiCol_TabActive] = ImColor::HSV(0.5f, 0.871f, 0.208f);
 		colors[ImGuiCol_TabUnfocused] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
 		colors[ImGuiCol_TabUnfocusedActive] = colors[ImGuiCol_TabHovered];
 
@@ -52,14 +55,14 @@ namespace Walnut::UI {
 		colors[ImGuiCol_CheckMark] = ImColor(200, 200, 200, 255);
 
 		// Slider
-		colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
-		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+		colors[ImGuiCol_SliderGrab] = ImColor::HSV(0.5f, 0.871f, 0.508f);
+		colors[ImGuiCol_SliderGrabActive] = ImColor::HSV(0.5f, 0.871f, 0.608f);
 
 		// Text
 		colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::text);
 
 		// Checkbox
-		colors[ImGuiCol_CheckMark] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::text);
+		colors[ImGuiCol_CheckMark] = ImColor::HSV(0.5f, 0.871f, 0.608f);
 
 		// Separator
 		colors[ImGuiCol_Separator] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::backgroundDark);
