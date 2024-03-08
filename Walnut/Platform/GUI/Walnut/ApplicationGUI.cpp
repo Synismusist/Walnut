@@ -8,6 +8,7 @@
 //
 
 #include "implot.h"
+#include "imnodes.h"
 
 #include "imgui_internal.h"
 
@@ -538,6 +539,7 @@ namespace Walnut {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImPlot::CreateContext();
+		ImNodes::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -689,6 +691,7 @@ namespace Walnut {
 
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
+		ImNodes::DestroyContext();
 		ImPlot::DestroyContext();
 		ImGui::DestroyContext();
 
