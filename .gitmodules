@@ -18,9 +18,6 @@
 [submodule "vendor/spdlog"]
 	path = vendor/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "vendor/yaml-cpp"]
-	path = vendor/yaml-cpp
-	url = https://github.com/TheCherno/yaml-cpp
 [submodule "vendor/implot"]
 	path = vendor/implot
 	url = https://github.com/Synismusist/implot
