@@ -25,6 +25,8 @@ project "Walnut"
       "../vendor/glfw/include",
       "../vendor/stb_image",
 
+      "../../vendor/IconFontCppHeaders", --kill me
+
       "%{IncludeDir.VulkanSDK}",
       "%{IncludeDir.glm}",
       "%{IncludeDir.spdlog}",

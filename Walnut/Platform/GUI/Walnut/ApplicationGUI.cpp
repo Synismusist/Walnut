@@ -25,6 +25,8 @@
 
 #include "ImGui/ImGuiTheme.h"
 
+#include "IconsFontAwesome6.h"
+
 #include "stb_image.h"
 
 #include <iostream>
@@ -590,7 +592,18 @@ namespace Walnut {
 		// Load default font
 		ImFontConfig fontConfig;
 		fontConfig.FontDataOwnedByAtlas = false;
+
 		ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+		// merge in icons from Font Awesome
+		float baseFontSize = 24.f; // 13.0f is the size of the default font. Change to the font size you use.
+		float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+		fontConfig.MergeMode = true;
+		fontConfig.PixelSnapH = true;
+		fontConfig.GlyphMinAdvanceX = iconFontSize;
+		auto file = std::filesystem::path("webfonts") / std::filesystem::path(FONT_ICON_FILE_NAME_FAS);
+		io.Fonts->AddFontFromFileTTF(file.string().c_str(), iconFontSize, &fontConfig, icons_ranges);
+
 		s_Fonts["Default"] = robotoFont;
 		s_Fonts["Bold"] = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoBold, sizeof(g_RobotoBold), 20.0f, &fontConfig);
 		s_Fonts["Italic"] = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoItalic, sizeof(g_RobotoItalic), 20.0f, &fontConfig);
