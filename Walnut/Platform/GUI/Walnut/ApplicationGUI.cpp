@@ -204,10 +204,14 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 	// Create Logical Device (with 1 graphics queue and n compute queues)
 	{
-		int device_extension_count = 1;
-		const char* device_extensions[] = { "VK_KHR_swapchain" };
+		int device_extension_count = 2;
+		const char* device_extensions[] = { "VK_KHR_swapchain", "VK_EXT_shader_atomic_float" };
 		const float queue_priority[] = { 0.01f };
 		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);
+
+		VkPhysicalDeviceShaderAtomicFloatFeaturesEXT floatFeatures = {};
+		floatFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_FEATURES_EXT;
+		floatFeatures.shaderBufferFloat32AtomicAdd = VK_TRUE; // this allows to perform atomic operations on storage buffers
 		VkDeviceQueueCreateInfo queue_info[2] = {};
 		queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info[0].queueFamilyIndex = g_QueueFamily;
@@ -223,6 +227,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		create_info.pQueueCreateInfos = queue_info;
 		create_info.enabledExtensionCount = device_extension_count;
 		create_info.ppEnabledExtensionNames = device_extensions;
+		create_info.pNext = &floatFeatures;
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
 		vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
