@@ -204,8 +204,8 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 	// Create Logical Device (with 1 graphics queue and n compute queues)
 	{
-		int device_extension_count = 2;
-		const char* device_extensions[] = { "VK_KHR_swapchain", "VK_EXT_shader_atomic_float" };
+		int device_extension_count = 3;
+		const char* device_extensions[] = { "VK_KHR_swapchain", "VK_KHR_16bit_storage","VK_KHR_shader_float16_int8"};
 		const float queue_priority[] = { 0.01f };
 		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);
 
