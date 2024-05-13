@@ -12,6 +12,7 @@
 #include <filesystem>
 
 #include "imgui.h"
+#include "vk_mem_alloc.h"
 #include "vulkan/vulkan.h"
 
 void check_vk_result(VkResult err);
@@ -74,6 +75,7 @@ namespace Walnut {
 		static std::vector<VkQueue> GetComputeQueue();
 		static uint32_t GetComputeQueueFamily();
 		static uint32_t GetGraphicsQueueFamily();
+		static VmaAllocator GetVmaAllocator();
 
 		static VkCommandBuffer GetCommandBuffer(bool begin);
 		static void FlushCommandBuffer(VkCommandBuffer commandBuffer);

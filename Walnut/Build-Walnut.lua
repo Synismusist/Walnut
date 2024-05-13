@@ -26,6 +26,7 @@ project "Walnut"
       "../vendor/stb_image",
 
       "../../vendor/IconFontCppHeaders", --kill me
+      "../../vendor/VulkanMemoryAllocator/include",
 
       "%{IncludeDir.VulkanSDK}",
       "%{IncludeDir.glm}",

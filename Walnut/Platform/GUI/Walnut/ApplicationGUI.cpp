@@ -12,6 +12,9 @@
 
 #include "imgui_internal.h"
 
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
 
@@ -45,12 +48,12 @@ extern bool g_ApplicationRunning;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-//#define IMGUI_UNLIMITED_FRAME_RATE
+//#define IMGUI_UNLIMITED_FRAME_RATE 
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
 
-static VkAllocationCallbacks* g_Allocator = NULL;
+static VkAllocationCallbacks*	g_Allocator = NULL;
 static VkInstance               g_Instance = VK_NULL_HANDLE;
 static VkPhysicalDevice         g_PhysicalDevice = VK_NULL_HANDLE;
 static VkDevice                 g_Device = VK_NULL_HANDLE;
@@ -62,6 +65,7 @@ static std::vector<VkQueue>		g_ComputeQueue;
 static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
+static VmaAllocator				g_VmaAllocator;
 
 static ImGui_ImplVulkanH_Window g_MainWindowData;
 static int                      g_MinImageCount = 2;
@@ -230,6 +234,14 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		create_info.pNext = &floatFeatures;
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
+		VmaAllocatorCreateInfo alloc_info = {};
+		alloc_info.instance = g_Instance;
+		alloc_info.physicalDevice = g_PhysicalDevice;
+		alloc_info.device = g_Device;
+		alloc_info.vulkanApiVersion = VK_API_VERSION_1_3;
+		alloc_info.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+		err = vmaCreateAllocator(&alloc_info, &g_VmaAllocator);
+		check_vk_result(err);
 		vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
 		g_ComputeQueue.resize(g_ComputeQueueCount);
 		for (uint32_t i = 0; i < g_ComputeQueueCount; i++) {
@@ -307,7 +319,7 @@ static void CleanupVulkan()
 	auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
 	vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
 #endif // IMGUI_VULKAN_DEBUG_REPORT
-
+	vmaDestroyAllocator(g_VmaAllocator);
 	vkDestroyDevice(g_Device, g_Allocator);
 	vkDestroyInstance(g_Instance, g_Allocator);
 }
@@ -1082,6 +1094,12 @@ namespace Walnut {
 	std::vector<VkQueue> Application::GetComputeQueue()
 	{
 		return g_ComputeQueue;
+	}
+
+
+	VmaAllocator Application::GetVmaAllocator()
+	{
+		return g_VmaAllocator;
 	}
 
 	uint32_t Application::GetComputeQueueFamily() 
