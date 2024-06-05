@@ -12,7 +12,6 @@
 
 #include "imgui_internal.h"
 
-#define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
 #include "backends/imgui_impl_glfw.h"
@@ -48,7 +47,7 @@ extern bool g_ApplicationRunning;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-//#define IMGUI_UNLIMITED_FRAME_RATE 
+#define IMGUI_UNLIMITED_FRAME_RATE 
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
@@ -96,7 +95,7 @@ void check_vk_result(VkResult err)
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
 {
 	(void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; // Unused arguments
-//	fprintf(stderr, "[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
+	fprintf(stderr, "[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
 	return VK_FALSE;
 }
 #endif // IMGUI_VULKAN_DEBUG_REPORT
@@ -107,8 +106,17 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 	// Create Vulkan Instance
 	{
+		VkApplicationInfo app_info = {};
+		app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		app_info.pEngineName = "ABE";
+		app_info.engineVersion = VK_MAKE_VERSION(0,0,1);
+		app_info.pApplicationName = "AB MaphApp";
+		app_info.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
+		app_info.apiVersion = VK_API_VERSION_1_3;
+
 		VkInstanceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		create_info.pApplicationInfo = &app_info;
 		create_info.enabledExtensionCount = extensions_count;
 		create_info.ppEnabledExtensionNames = extensions;
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
@@ -209,13 +217,22 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 	// Create Logical Device (with 1 graphics queue and n compute queues)
 	{
 		int device_extension_count = 3;
-		const char* device_extensions[] = { "VK_KHR_swapchain", "VK_KHR_16bit_storage","VK_KHR_shader_float16_int8"};
+		const char* device_extensions[] = { 
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+			VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
+			VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME
+		};
 		const float queue_priority[] = { 0.01f };
 		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);
 
-		VkPhysicalDeviceShaderAtomicFloatFeaturesEXT floatFeatures = {};
-		floatFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_FEATURES_EXT;
-		floatFeatures.shaderBufferFloat32AtomicAdd = VK_TRUE; // this allows to perform atomic operations on storage buffers
+		VkPhysicalDeviceFeatures deviceFeatures = {};
+		deviceFeatures.shaderInt16 = VK_TRUE;
+		deviceFeatures.shaderInt64 = VK_TRUE;
+		VkPhysicalDevice16BitStorageFeatures sixteenBitStorageFeatures = {};
+		sixteenBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES;
+		sixteenBitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
+		sixteenBitStorageFeatures.storageBuffer16BitAccess = VK_TRUE;
+		//VkPhysicalDeviceABU
 		VkDeviceQueueCreateInfo queue_info[2] = {};
 		queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info[0].queueFamilyIndex = g_QueueFamily;
@@ -227,11 +244,12 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		queue_info[1].pQueuePriorities = computequeue_priority.data();
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		create_info.pEnabledFeatures = &deviceFeatures;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
 		create_info.pQueueCreateInfos = queue_info;
 		create_info.enabledExtensionCount = device_extension_count;
 		create_info.ppEnabledExtensionNames = device_extensions;
-		create_info.pNext = &floatFeatures;
+		create_info.pNext = &sixteenBitStorageFeatures;
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
 		VmaAllocatorCreateInfo alloc_info = {};
@@ -239,7 +257,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		alloc_info.physicalDevice = g_PhysicalDevice;
 		alloc_info.device = g_Device;
 		alloc_info.vulkanApiVersion = VK_API_VERSION_1_3;
-		alloc_info.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+		alloc_info.flags = 0; // VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
 		err = vmaCreateAllocator(&alloc_info, &g_VmaAllocator);
 		check_vk_result(err);
 		vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);

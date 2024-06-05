@@ -552,6 +552,20 @@ namespace Walnut::UI {
 		return ImGui::Button(label);
 	}
 
+	bool SmallButtonCentered(const char* label, const ImVec2& size)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		float actualSize = ImGui::CalcTextSize(label).x + style.FramePadding.x * 2.0f;
+		float avail = ImGui::GetContentRegionAvail().x;
+
+		float off = (avail - actualSize) * 0.5f;
+		if (off > 0.0f)
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+		return ImGui::SmallButton(label);
+	}
+
 	void DrawBorder(ImRect rect, float thickness, float rounding, float offsetX, float offsetY)
 	{
 		auto min = rect.Min;
