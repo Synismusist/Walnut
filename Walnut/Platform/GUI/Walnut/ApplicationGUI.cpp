@@ -228,6 +228,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		deviceFeatures.shaderInt16 = VK_TRUE;
 		deviceFeatures.shaderInt64 = VK_TRUE;
+		deviceFeatures.shaderFloat64 = VK_TRUE;
 		VkPhysicalDevice16BitStorageFeatures sixteenBitStorageFeatures = {};
 		sixteenBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES;
 		sixteenBitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
