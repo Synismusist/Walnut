@@ -216,10 +216,10 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 	// Create Logical Device (with 1 graphics queue and n compute queues)
 	{
-		int device_extension_count = 3;
-		const char* device_extensions[] = { 
+		std::vector<const char*> device_extensions = { 
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 			VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
+			VK_KHR_8BIT_STORAGE_EXTENSION_NAME,
 			VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME
 		};
 		const float queue_priority[] = { 0.01f };
@@ -248,8 +248,8 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		create_info.pEnabledFeatures = &deviceFeatures;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
 		create_info.pQueueCreateInfos = queue_info;
-		create_info.enabledExtensionCount = device_extension_count;
-		create_info.ppEnabledExtensionNames = device_extensions;
+		create_info.enabledExtensionCount = device_extensions.size();
+		create_info.ppEnabledExtensionNames = device_extensions.data();
 		create_info.pNext = &sixteenBitStorageFeatures;
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
