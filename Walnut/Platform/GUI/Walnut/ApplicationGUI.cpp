@@ -229,10 +229,23 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		deviceFeatures.shaderInt16 = VK_TRUE;
 		deviceFeatures.shaderInt64 = VK_TRUE;
 		deviceFeatures.shaderFloat64 = VK_TRUE;
+		VkPhysicalDevice8BitStorageFeatures eightBitStorageFeatures = {};
+		eightBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
+		eightBitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_TRUE;
+		eightBitStorageFeatures.storageBuffer8BitAccess = VK_TRUE;
 		VkPhysicalDevice16BitStorageFeatures sixteenBitStorageFeatures = {};
 		sixteenBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES;
 		sixteenBitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
 		sixteenBitStorageFeatures.storageBuffer16BitAccess = VK_TRUE;
+		sixteenBitStorageFeatures.pNext = &eightBitStorageFeatures;
+		VkPhysicalDeviceShaderFloat16Int8Features shaderFloat16Int8Features = {};
+		shaderFloat16Int8Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES;
+		shaderFloat16Int8Features.shaderInt8 = VK_TRUE;
+		shaderFloat16Int8Features.pNext = &sixteenBitStorageFeatures;
+		VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
+		deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		deviceFeatures2.pNext = &shaderFloat16Int8Features;
+		deviceFeatures2.features = deviceFeatures;
 		//VkPhysicalDeviceABU
 		VkDeviceQueueCreateInfo queue_info[2] = {};
 		queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -245,12 +258,12 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		queue_info[1].pQueuePriorities = computequeue_priority.data();
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		create_info.pEnabledFeatures = &deviceFeatures;
+		create_info.pEnabledFeatures = 0;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
 		create_info.pQueueCreateInfos = queue_info;
 		create_info.enabledExtensionCount = device_extensions.size();
 		create_info.ppEnabledExtensionNames = device_extensions.data();
-		create_info.pNext = &sixteenBitStorageFeatures;
+		create_info.pNext = &deviceFeatures2;
 		err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
 		check_vk_result(err);
 		VmaAllocatorCreateInfo alloc_info = {};
