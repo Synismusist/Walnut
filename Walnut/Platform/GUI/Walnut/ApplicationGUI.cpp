@@ -220,11 +220,11 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 			VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
 			VK_KHR_8BIT_STORAGE_EXTENSION_NAME,
-			VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME
+			VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME,
 		};
 		const float queue_priority[] = { 0.01f };
-		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);
-
+		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);	
+		
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		deviceFeatures.shaderInt16 = VK_TRUE;
 		deviceFeatures.shaderInt64 = VK_TRUE;
@@ -233,6 +233,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		eightBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
 		eightBitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_TRUE;
 		eightBitStorageFeatures.storageBuffer8BitAccess = VK_TRUE;
+		//eightBitStorageFeatures.pNext = &atomicFloatFeatures;
 		VkPhysicalDevice16BitStorageFeatures sixteenBitStorageFeatures = {};
 		sixteenBitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES;
 		sixteenBitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
