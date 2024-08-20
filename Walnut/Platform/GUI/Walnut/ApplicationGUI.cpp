@@ -651,6 +651,7 @@ namespace Walnut {
 		fontConfig.MergeMode = true;
 		fontConfig.PixelSnapH = true;
 		fontConfig.GlyphMinAdvanceX = iconFontSize;
+
 		auto file = std::filesystem::path("webfonts") / std::filesystem::path(FONT_ICON_FILE_NAME_FAS);
 		io.Fonts->AddFontFromFileTTF(file.string().c_str(), iconFontSize, &fontConfig, icons_ranges);
 
