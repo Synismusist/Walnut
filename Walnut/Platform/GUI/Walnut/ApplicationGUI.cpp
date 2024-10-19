@@ -772,7 +772,7 @@ namespace Walnut {
 
 	void Application::UI_DrawTitlebar(float& outTitlebarHeight)
 	{
-		const float titlebarHeight = 58.0f;
+		const float titlebarHeight = 64.0f;
 		const bool isMaximized = IsMaximized();
 		float titlebarVerticalOffset = isMaximized ? -6.0f : 0.0f;
 		const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
@@ -789,8 +789,8 @@ namespace Walnut {
 
 		// Logo
 		{
-			const int logoWidth = 48;// m_LogoTex->GetWidth();
-			const int logoHeight = 48;// m_LogoTex->GetHeight();
+			const int logoWidth = 64;// m_LogoTex->GetWidth();
+			const int logoHeight = 64;// m_LogoTex->GetHeight();
 			const ImVec2 logoOffset(16.0f + windowPadding.x, 5.0f + windowPadding.y + titlebarVerticalOffset);
 			const ImVec2 logoRectStart = { ImGui::GetItemRectMin().x + logoOffset.x, ImGui::GetItemRectMin().y + logoOffset.y };
 			const ImVec2 logoRectMax = { logoRectStart.x + logoWidth, logoRectStart.y + logoHeight };
@@ -802,7 +802,7 @@ namespace Walnut {
 		static float moveOffsetX;
 		static float moveOffsetY;
 		const float w = ImGui::GetContentRegionAvail().x;
-		const float buttonsAreaWidth = 94;
+		const float buttonsAreaWidth = 94.f;
 
 		// Title bar drag area
 		// On Windows we hook into the GLFW win32 window internals
@@ -826,7 +826,7 @@ namespace Walnut {
 			ImGui::SuspendLayout();
 			{
 				ImGui::SetItemAllowOverlap();
-				const float logoHorizontalOffset = 16.0f * 2.0f + 48.0f + windowPadding.x;
+				const float logoHorizontalOffset = 16.0f * 2.0f + 64.0f + windowPadding.x;
 				ImGui::SetCursorPos(ImVec2(logoHorizontalOffset, 6.0f + titlebarVerticalOffset));
 				UI_DrawMenubar();
 
