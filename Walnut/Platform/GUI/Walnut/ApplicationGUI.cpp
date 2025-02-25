@@ -221,6 +221,9 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 			VK_KHR_16BIT_STORAGE_EXTENSION_NAME,
 			VK_KHR_8BIT_STORAGE_EXTENSION_NAME,
 			VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME,
+			//VK_KHR_VIDEO_QUEUE_EXTENSION_NAME,
+			//VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME,
+			//VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME
 		};
 		const float queue_priority[] = { 0.01f };
 		std::vector<float> computequeue_priority(g_ComputeQueueCount, 1.f);	
